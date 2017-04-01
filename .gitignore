@@ -22,3 +22,8 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+vendor/
+services/app/routes/
+services/app/tmp/
+.idea/
