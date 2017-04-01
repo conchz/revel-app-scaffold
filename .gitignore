@@ -24,6 +24,6 @@ _testmain.go
 *.prof
 
 vendor/
-services/app/routes/
-services/app/tmp/
+app/routes/
+app/tmp/
 .idea/
