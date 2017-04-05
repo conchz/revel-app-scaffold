@@ -14,7 +14,7 @@ RUN apt-get update && \
 
 # Install & Verify Go
 WORKDIR /root
-RUN mkdir -p /root/go/{bin, pkg, src}
+RUN mkdir -p /root/go/{bin,pkg,src}
 RUN curl -qO https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
 RUN tar -xzf go1.8.linux-amd64.tar.gz -C /usr/local
 RUN rm -f go1.8.linux-amd64.tar.gz
@@ -28,19 +28,23 @@ RUN go env
 RUN /usr/bin/easy_install supervisor
 RUN /usr/bin/easy_install supervisor-stdout
 
+# Set Time Zone
+RUN echo "Asia/Shanghai" > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
+
 # Get App Dependencies
 RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
 
 # Add Nginx frontend host
-ADD ./docker/nginx_app.vhost /etc/nginx/sites-available/default
+ADD ./docker/revel.conf /etc/nginx/conf.d/default.conf
 
 # Stage App
 ENV APP_PATH github.com/lavenderx/revel-app-scaffold
 ADD . $GOPATH/src/$APP_PATH
 
 # Setup Nginx
-RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf
-RUN sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf
+RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 3/" /etc/nginx/nginx.conf
+RUN sed -i -e"s/keepalive_timeout 2/keepalive_timeout 3;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Setup Supervisord
