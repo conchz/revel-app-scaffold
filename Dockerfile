@@ -1,42 +1,41 @@
 ### App deployment script to create a new LXC Container via Docker
 ###
-### Docker: http://www.docker.io
+### Docker: https://www.docker.com
 
-FROM ubuntu:16.04
-MAINTAINER Zongzhi Bai <dolphineor@gmail.com>
-
-# Update the base system
-RUN apt-get update
+FROM nginx:1.10
+MAINTAINER Zongzhi Bai "dolphineor@gmail.com"
 
 # Tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install System Dependencies
-RUN apt-get -y install build-essential golang git-core mercurial mysql-client mysql-server nginx pwgen python-setuptools vim-tiny
+# Update & Install System Dependencies
+RUN apt-get update && \
+    apt-get -y install build-essential mercurial mysql-client mysql-server curl vim pwgen git-core python-setuptools
 
-# Setup Go
-RUN mkdir /go
-ENV GOPATH  /go
-ENV PATH $PATH:$GOPATH/bin
+# Install & Verify Go
+WORKDIR /root
+RUN mkdir -p /root/go/{bin, pkg, src}
+RUN curl -qO https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+RUN tar -xzf go1.8.linux-amd64.tar.gz -C /usr/local
+RUN rm -f go1.8.linux-amd64.tar.gz
+ENV GOROOT /usr/local/go
+ENV GOPATH /root/go
+ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
+RUN go version
+RUN go env
 
-# Install Supervisord
+# Install Supervisor
 RUN /usr/bin/easy_install supervisor
 RUN /usr/bin/easy_install supervisor-stdout
 
 # Get App Dependencies
-#
-# Annoyingly, we can not use `go get github.com/lavenderx/service_registry_discovery/services/...` because
-# references to revel/app/routes package fail
-RUN go get -v github.com/revel/revel github.com/revel/cmd/revel \
-    github.com/robfig/cron github.com/coopernurse/gorp code.google.com/p/go.crypto/bcrypt \
-    github.com/mattn/go-sqlite3 github.com/go-sql-driver/mysql \
-    github.com/ftrvxmtrx/gravatar github.com/russross/blackfriday
+RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
 
 # Add Nginx frontend host
 ADD ./docker/nginx_app.vhost /etc/nginx/sites-available/default
 
 # Stage App
-ENV APP_PATH github.com/lavenderx/service_registry_discovery/services
+ENV APP_PATH github.com/lavenderx/revel-app-scaffold
 ADD . $GOPATH/src/$APP_PATH
 
 # Setup Nginx
@@ -51,7 +50,7 @@ RUN cp $GOPATH/src/$APP_PATH/docker/supervisord.conf /etc/supervisord.conf
 RUN cp $GOPATH/src/$APP_PATH/docker/start.sh /start.sh
 RUN chmod 755 /start.sh
 
-# Expose Web Frontend (nginx) port only
+# Expose Web Frontend (Nginx) port only
 EXPOSE 80
 
 # Start required services when docker is instantiated
