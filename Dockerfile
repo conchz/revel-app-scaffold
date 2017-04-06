@@ -23,7 +23,6 @@ ENV GOROOT /usr/local/go
 ENV GOPATH /root/go
 ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
 RUN go env
-RUN curl -qO https://glide.sh/get | sh
 
 # Install Supervisor
 RUN /usr/bin/easy_install supervisor
@@ -34,16 +33,20 @@ RUN echo "Asia/Shanghai" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 # Get App Dependencies
-#RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
-
-# Add Nginx frontend host
-ADD ./docker/nginx-revel.vhost /etc/nginx/conf.d/default.conf
+RUN go get -v github.com/revel/revel \
+    github.com/revel/cmd/revel \
+    golang.org/x/crypto/bcrypt \
+    github.com/go-sql-driver/mysql
 
 # Stage App
 ENV APP_PATH github.com/lavenderx/revel-app-scaffold
 ADD . $GOPATH/src/$APP_PATH
-RUN rm -rf .idea/ && rm -rf .git/ && rm -rf vendor/
-RUN glide install
+RUN rm -rf $GOPATH/src/$APP_PATH/.idea/ && \
+    rm -rf $GOPATH/src/$APP_PATH/.git/ && \
+    rm -rf $GOPATH/src/$APP_PATH/vendor/
+
+# Add Nginx frontend host
+RUN cp $GOPATH/src/$APP_PATH/docker/nginx-revel.vhost /etc/nginx/conf.d/default.conf
 
 # Setup Nginx
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 3/" /etc/nginx/nginx.conf
