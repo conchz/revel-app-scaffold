@@ -15,7 +15,7 @@ RUN apt-get update && \
 # Install & Verify Go
 ENV GOLANG_VERSION 1.8
 WORKDIR /root
-RUN mkdir -p /root/go/{bin,pkg,src}
+RUN mkdir -p /root/go/bin
 RUN curl -qO https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-amd64.tar.gz
 RUN tar -xzf go$GOLANG_VERSION.linux-amd64.tar.gz -C /usr/local
 RUN rm -f go$GOLANG_VERSION.linux-amd64.tar.gz
@@ -23,6 +23,7 @@ ENV GOROOT /usr/local/go
 ENV GOPATH /root/go
 ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
 RUN go env
+RUN curl -qO https://glide.sh/get | sh
 
 # Install Supervisor
 RUN /usr/bin/easy_install supervisor
@@ -33,7 +34,7 @@ RUN echo "Asia/Shanghai" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 # Get App Dependencies
-RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
+#RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
 
 # Add Nginx frontend host
 ADD ./docker/nginx-revel.vhost /etc/nginx/conf.d/default.conf
@@ -41,6 +42,8 @@ ADD ./docker/nginx-revel.vhost /etc/nginx/conf.d/default.conf
 # Stage App
 ENV APP_PATH github.com/lavenderx/revel-app-scaffold
 ADD . $GOPATH/src/$APP_PATH
+RUN rm -rf .idea/ && rm -rf .git/ && rm -rf vendor/
+RUN glide install
 
 # Setup Nginx
 RUN sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 3/" /etc/nginx/nginx.conf
