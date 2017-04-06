@@ -2,7 +2,7 @@
 ###
 ### Docker: https://www.docker.com
 
-FROM nginx:1.10
+FROM nginx:1.10.3
 MAINTAINER Zongzhi Bai "dolphineor@gmail.com"
 
 # Tell debconf to run in non-interactive mode
@@ -10,18 +10,18 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Update & Install System Dependencies
 RUN apt-get update && \
-    apt-get -y install build-essential mercurial mysql-client mysql-server curl vim pwgen git-core python-setuptools
+    apt-get -y install build-essential mysql-client mysql-server curl vim pwgen git-core python-setuptools
 
 # Install & Verify Go
+ENV GOLANG_VERSION 1.8
 WORKDIR /root
 RUN mkdir -p /root/go/{bin,pkg,src}
-RUN curl -qO https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
-RUN tar -xzf go1.8.linux-amd64.tar.gz -C /usr/local
-RUN rm -f go1.8.linux-amd64.tar.gz
+RUN curl -qO https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-amd64.tar.gz
+RUN tar -xzf go$GOLANG_VERSION.linux-amd64.tar.gz -C /usr/local
+RUN rm -f go$GOLANG_VERSION.linux-amd64.tar.gz
 ENV GOROOT /usr/local/go
 ENV GOPATH /root/go
 ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
-RUN go version
 RUN go env
 
 # Install Supervisor
@@ -36,7 +36,7 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 RUN go get -v github.com/revel/revel github.com/revel/cmd/revel golang.org/x/crypto/bcrypt github.com/go-sql-driver/mysql
 
 # Add Nginx frontend host
-ADD ./docker/revel.conf /etc/nginx/conf.d/default.conf
+ADD ./docker/nginx-revel.vhost /etc/nginx/conf.d/default.conf
 
 # Stage App
 ENV APP_PATH github.com/lavenderx/revel-app-scaffold
