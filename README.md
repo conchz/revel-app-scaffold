@@ -36,11 +36,10 @@ The directory structure of a generated Revel application:
 
 Make sure you have [Go](https://golang.org/doc/install) and the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed.
 
-    ```
     $ heroku create -b https://github.com/revel/heroku-buildpack-go-revel.git
     $ git push heroku master
     $ heroku open
-    ```
+    
 or
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
