@@ -1,1 +1,1 @@
-web: golang-revel
+web: revel-app-scaffold
