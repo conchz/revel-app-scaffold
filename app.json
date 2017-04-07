@@ -1,0 +1,14 @@
+{
+  "name": "Start on Heroku: Go",
+  "description": "Go Getting Started Example App With Revel",
+  "keywords": [
+    "getting-started",
+    "go",
+    "revel",
+    "example"
+  ],
+  "image": "heroku/go:1.8",
+  "mount_dir": "src/github.com/lavenderx/revel-app-scaffold",
+  "website": "https://github.com/lavenderx/revel-app-scaffold",
+  "repository": "https://github.com/lavenderx/revel-app-scaffold"
+}

@@ -3,7 +3,7 @@
 ### Docker: https://www.docker.com
 
 FROM nginx:1.10.3
-MAINTAINER Zongzhi Bai "dolphineor@gmail.com"
+MAINTAINER Zongzhi Bai <dolphineor@gmail.com>
 
 # Tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
