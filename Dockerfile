@@ -35,7 +35,6 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 # Get App Dependencies
 RUN go get -v github.com/revel/revel \
     github.com/revel/cmd/revel \
-    golang.org/x/crypto/bcrypt \
     github.com/go-sql-driver/mysql
 
 # Stage App

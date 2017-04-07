@@ -7,5 +7,3 @@ import:
   version: ^0.14.1
   subpackages:
   - revel
-- package: golang.org/x/crypto/bcrypt
-- package: github.com/go-sql-driver/mysql
