@@ -2,3 +2,4 @@
 *.css linguist-language=Go
 *.html linguist-language=Go
 *.tpl linguist-language=Go
+*.vhost linguist-language=Go
