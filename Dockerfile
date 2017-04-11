@@ -10,10 +10,10 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Update & Install System Dependencies
 RUN apt-get update && \
-    apt-get -y install build-essential mysql-client mysql-server curl vim pwgen git-core python-setuptools
+    apt-get -y install build-essential mysql-client mysql-server curl vim pwgen git-core python-pip python-setuptools
 
 # Install & Verify Go
-ENV GOLANG_VERSION 1.8
+ENV GOLANG_VERSION 1.8.1
 WORKDIR /root
 RUN mkdir -p /root/go/bin
 RUN curl -qO https://storage.googleapis.com/golang/go$GOLANG_VERSION.linux-amd64.tar.gz
@@ -25,8 +25,10 @@ ENV PATH $GOROOT/bin:$GOPATH/bin:$PATH
 RUN go env
 
 # Install Supervisor
-RUN /usr/bin/easy_install supervisor
-RUN /usr/bin/easy_install supervisor-stdout
+RUN mkdir ~/.pip
+RUN echo "[global]\nindex-url=http://mirrors.aliyun.com/pypi/simple/\n[install]\ntrusted-host=mirrors.aliyun.com" > ~/.pip/pip.conf
+RUN pip install supervisor==3.3.1
+RUN pip install supervisor-stdout==0.1.1
 
 # Set Time Zone
 RUN echo "Asia/Shanghai" > /etc/timezone
