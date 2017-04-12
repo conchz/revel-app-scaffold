@@ -1,9 +1,9 @@
 package: github.com/lavenderx/revel-app-scaffold
 license: MIT
 import:
-- package: github.com/revel/revel
-  version: ^0.14.0
 - package: github.com/revel/cmd
   version: ^0.14.1
   subpackages:
   - revel
+- package: github.com/go-sql-driver/mysql
+  version: ^1.3
